@@ -2,7 +2,7 @@ require './lib/hash_attr/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'hash_attr'
-  spec.version       = EncryptAttr::VERSION
+  spec.version       = HashAttr::VERSION
   spec.authors       = ['Dann Luciano']
   spec.email         = ['dannluciano@gmail.com']
   spec.summary       = 'Hash attributes using SHA512 (or your custom hash strategy). Works with and without ActiveRecord.'
