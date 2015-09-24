@@ -2,7 +2,7 @@ require 'codeclimate-test-reporter'
 CodeClimate::TestReporter.start
 require 'bundler/setup'
 require 'active_record'
-require 'hash_attr'
+require 'hashed_attr'
 require 'minitest/spec'
 require 'minitest/autorun'
 require 'minitest/reporters'

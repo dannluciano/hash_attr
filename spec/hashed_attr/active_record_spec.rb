@@ -1,18 +1,17 @@
 require 'minitest_helper'
 
-describe HashAttr, 'ActiveRecord support' do
+describe HashedAttr, 'ActiveRecord support' do
   it 'includes module' do
-    ActiveRecord::Base.included_modules.must_include(HashAttr::Base)
+    ActiveRecord::Base.included_modules.must_include(HashedAttr::Base)
   end
 
   it 'encrypts attributes' do
     model = Class.new(ActiveRecord::Base) {
       self.table_name = 'users'
-      hash_attr :api_key
+      hashed_attr :api_key
     }
 
-    hashed_api_key = HashAttr::Encryptor
-                          .encrypt('API_KEY')
+    hashed_api_key = HashedAttr::Encryptor.encrypt('API_KEY')
 
     instance = model.create(api_key: 'API_KEY')
     instance.reload

@@ -1,4 +1,4 @@
-module HashAttr
+module HashedAttr
   module Base
     def self.included(target)
       target.extend(ClassMethods)
@@ -6,24 +6,24 @@ module HashAttr
 
     class << self
       # Define the object that will encrypt/decrypt values.
-      # By default, it's HashAttr::Encryptor
+      # By default, it's HashedAttr::Encryptor
       attr_accessor :encryptor
     end
 
     # Set initial encryptor engine.
-    self.encryptor = Encryptor
+    self.encryptor = HashedAttr::Encryptor
 
     module ClassMethods
-      def hash_attr(*args)
+      def hashed_attr(*args)
 
         args.each do |attribute|
-          define_encrypted_attribute(attribute)
+          define_hashed_attribute(attribute)
         end
       end
 
       private
 
-      def define_encrypted_attribute(attribute)
+      def define_hashed_attribute(attribute)
         define_method attribute do
           instance_variable_get("@#{attribute}")
         end
@@ -31,7 +31,7 @@ module HashAttr
         define_method "#{attribute}=" do |value|
           instance_variable_set("@#{attribute}", value)
           send("hashed_#{attribute}=", nil)
-          send("hashed_#{attribute}=", HashAttr.encryptor.encrypt(value)) if value
+          send("hashed_#{attribute}=", HashedAttr.encryptor.encrypt(value)) if value
         end
       end
     end

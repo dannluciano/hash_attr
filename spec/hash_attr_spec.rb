@@ -1,13 +1,13 @@
 require 'minitest_helper'
 
-describe HashAttr do
+describe HashedAttr do
 
   it 'encrypts one attribute' do
-    hashed_api_key = HashAttr::Encryptor.encrypt('API_KEY')
+    hashed_api_key = HashedAttr::Encryptor.encrypt('API_KEY')
 
     klass = create_class do
       attr_accessor :hashed_api_key
-      hash_attr :api_key
+      hashed_attr :api_key
     end
 
     instance = klass.new(api_key: 'API_KEY')
@@ -18,13 +18,13 @@ describe HashAttr do
   end
 
   it 'encrypts multiple attributes' do
-    hashed_api_key = HashAttr::Encryptor.encrypt('API_KEY')
+    hashed_api_key = HashedAttr::Encryptor.encrypt('API_KEY')
 
-    hashed_api_client_id = HashAttr::Encryptor.encrypt('API_CLIENT_ID')
+    hashed_api_client_id = HashedAttr::Encryptor.encrypt('API_CLIENT_ID')
 
     klass = create_class do
       attr_accessor :hashed_api_key, :hashed_api_client_id
-      hash_attr :api_key, :api_client_id
+      hashed_attr :api_key, :api_client_id
     end
 
     instance = klass.new(api_key: 'API_KEY', api_client_id: 'API_CLIENT_ID')
@@ -39,7 +39,7 @@ describe HashAttr do
   it 'updates encrypted value' do
     klass = create_class do
       attr_accessor :hashed_api_key
-      hash_attr :api_key
+      hashed_attr :api_key
     end
 
     instance = klass.new(api_key: 'API_KEY')
@@ -49,7 +49,7 @@ describe HashAttr do
 
     instance.api_key.must_equal('NEW_API_KEY')
 
-    new_hashed_api_key = HashAttr::Encryptor.encrypt('NEW_API_KEY')
+    new_hashed_api_key = HashedAttr::Encryptor.encrypt('NEW_API_KEY')
 
     instance.hashed_api_key.must_equal(new_hashed_api_key)
   end
@@ -57,7 +57,7 @@ describe HashAttr do
   it 'skips nil values' do
     klass = create_class do
       attr_accessor :hashed_api_key
-      hash_attr :api_key
+      hashed_attr :api_key
     end
 
     instance = klass.new(api_key: 'API_KEY')
@@ -68,7 +68,7 @@ describe HashAttr do
 
   def create_class(&block)
     Class.new {
-      include HashAttr
+      include HashedAttr
       instance_eval(&block)
 
       def initialize(options = {})

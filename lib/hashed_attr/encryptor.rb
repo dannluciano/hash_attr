@@ -1,7 +1,6 @@
 require 'digest/sha2'
-require 'base64'
 
-module HashAttr
+module HashedAttr
   class Encryptor
     def self.encrypt(value)
       new().encrypt(value)
