@@ -1,13 +1,13 @@
-require './lib/encrypt_attr/version'
+require './lib/hash_attr/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'encrypt_attr'
+  spec.name          = 'hash_attr'
   spec.version       = EncryptAttr::VERSION
-  spec.authors       = ['Nando Vieira']
-  spec.email         = ['fnando.vieira@gmail.com']
-  spec.summary       = 'Encrypt attributes using AES-256-CBC (or your custom encryption strategy). Works with and without ActiveRecord.'
+  spec.authors       = ['Dann Luciano']
+  spec.email         = ['dannluciano@gmail.com']
+  spec.summary       = 'Hash attributes using SHA512 (or your custom hash strategy). Works with and without ActiveRecord.'
   spec.description   = spec.summary
-  spec.homepage      = 'http://rubygems.org/gems/encrypt_attr'
+  spec.homepage      = 'http://rubygems.org/gems/hash_attr'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
@@ -21,6 +21,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'minitest-reporters'
   spec.add_development_dependency 'sqlite3'
   spec.add_development_dependency 'activerecord'
-  spec.add_development_dependency 'pry-meta'
   spec.add_development_dependency 'codeclimate-test-reporter'
 end
