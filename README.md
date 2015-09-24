@@ -1,17 +1,15 @@
-# EncryptAttr
+# HashedAttr
 
 [![Build Status](https://travis-ci.org/fnando/encrypt_attr.svg)](https://travis-ci.org/fnando/encrypt_attr)
-[![Code Climate](https://codeclimate.com/github/fnando/encrypt_attr/badges/gpa.svg)](https://codeclimate.com/github/fnando/encrypt_attr)
-[![Test Coverage](https://codeclimate.com/github/fnando/encrypt_attr/badges/coverage.svg)](https://codeclimate.com/github/fnando/encrypt_attr)
 
-Encrypt attributes using AES-256-CBC (or your custom encryption strategy). Works with and without ActiveRecord.
+Hashed attributes using SHA512 (or your custom hash strategy). Works with and without ActiveRecord.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'encrypt_attr'
+gem 'hashed_attr'
 ```
 
 And then execute:
@@ -20,115 +18,91 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install encrypt_attr
+    $ gem install hashed_attr
 
 ## Usage
 
-The most basic usage is including the `EncryptAttr` module.
+The most basic usage is including the `HashedAttr` module.
 
 ```ruby
 class User
-  include EncryptAttr
-  attr_accessor :encrypted_api_key
-  encrypt_attr :api_key
+  include HashedAttr
+  attr_accessor :hashed_api_key
+  hashed_attr :api_key
 end
 ```
 
-The `encrypt_attr` method has some aliases, so you can also use any of these:
+This assumes that you have a `hashed_api_key` attribute.
 
-- `attr_encrypt`
-- `attr_encrypted`
-- `attr_vault`
-- `encrypt_attr`
-- `encrypt_attribute`
-- `encrypted_attr`
-- `encrypted_attribute`
-
-This assumes that you have a `encrypted_api_key` attribute. By default, the value is encrypted using a global secret token. You can set a custom token by setting `EncryptAttr.secret_token`; you have to use 100 characters or more (e.g. `$ openssl rand -hex 50`).
-
-```ruby
-EncryptAttr.secret_token = 'abc123'
-```
-
-You can also set the secret token per attribute basis.
-
-```ruby
-class User
-  include EncryptAttr
-  attr_accessor :encrypted_api_key
-  encrypt_attr :api_key, secret_token: USER_SECRET_TOKEN
-end
-```
-
-To access the decrypted value, just use the method with the same name.
+To access the hashed value, just use the method with the same name.
 
 ```ruby
 user = User.new
 user.api_key = 'abc123'
 user.api_key                #=> abc123
-user.encrypted_api_key      #=> UcnhbnAl1Rmvt1mkG0m1FA...
+user.hashed_api_key      #=> xwtd2ev7b1HQnUEytxcMnS...
 
 user.api_key = 'newsecret'
 user.api_key                #=> newsecret
-user.encrypted_api_key      #=> JgH5dFGl8HnJNEloXZ6qSg...
+user.encrypted_api_key      #=> 6JI/kRYgIF5g1KW5LhQu1j7g4eAC+...
 ```
 
-You encrypt multiple attributes at once.
+You hash multiple attributes at once.
 
 ```ruby
 class User
-  include EncryptAttr
-  attr_accessor :encrypted_api_key
-  encrypt_attr :api_key, :api_client_id
+  include HashedAttr
+  attr_accessor :hashed_api_key, :api_client_id
+  hashed_attr :api_key, :api_client_id
 end
 ```
 
 ### ActiveRecord integration
 
-You can also use encrypted attributes with ActiveRecord. If ActiveRecord is available, it's included automatically. You can also manually include `EncryptAttr::Base` or require `encrypt_attr/activerecord`.
+You can also use hashed attributes with ActiveRecord. If ActiveRecord is available, it's included automatically. You can also manually include `HashedAttr::Base` or require `hashed_attr/activerecord`.
 
 ```ruby
 class User < ActiveRecord::Base
-  encrypt_attr :api_key
+  hashed_attr :api_key
 end
 ```
 
-The usage is pretty much the same, and you can set a secret for each attribute. The example above will require a column name `encrypted_api_key`.
+The usage is pretty much the same, and you can set a secret for each attribute. The example above will require a column name `hashed_api_key`.
 
 ```ruby
-class AddEncryptedApiKeyToUsers < ActiveRecord::Base
+class AddHashedApiKeyToUsers < ActiveRecord::Base
   def change
-    add_column :users, :encrypted_api_key, :text, null: false
+    add_column :users, :hashed_api_key, :text, null: false
   end
 end
 ```
 
-### Using a custom encryption
+### Using a custom Hashing
 
-You can define your encryption engine by defining an object that responds to `encrypt(secret_token, value)` and `decrypt(secret_token, value)`. Here's an example:
+You can define your hash engine by defining an object that responds to `encrypt(value)` and `decrypt(value)`. Here's an example:
 
 ```ruby
-module ReverseEncryptor
-  def self.encrypt(secret_token, value)
-    value.to_s.reverse
+module SHA256Hash
+  def self.encrypt(value)
+    Digest::SHA256.base64digest value
   end
 
-  def self.decrypt(secret_token, value)
-    value.to_s.reverse
+  def self.decrypt(value)
+    value
   end
 end
 
-EncryptAttr.encryptor = ReverseEncryptor
+HashedAttr.encryptor = SHA256Hash
 
 class User
-  include EncryptAttr
-  attr_accessor :encrypted_api_key
-  attr_encrypted :api_key
+  include HashedAttr
+  attr_accessor :hashed_api_key
+  attr_hashed :api_key
 end
 
 user = User.new
 user.api_key = 'API_KEY'
-user.encrypted_api_key #=> 'YEK_IPA'
+user.hashed_api_key #=> 'zK5tkSpBv+/Vaad7XNhmA83pLlPN1FgTy6nlvwgLNzQ='
 ```
 
 ## Development
@@ -139,8 +113,12 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-1. Fork it ( https://github.com/fnando/encrypt_attr/fork )
+1. Fork it ( https://github.com/dannluciano/hashed_attr/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+## Thanks
+Many :claps: for Nando Vieira [Twitter](https://twitter.com/fnando), [Github](https://github.com/fnando).
+This project is inspired by [EncrypAttr](https://github.com/fnando/encrypt_attr/).
